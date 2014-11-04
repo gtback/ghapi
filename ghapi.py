@@ -5,7 +5,6 @@ from StringIO import StringIO
 
 import requests
 
-PROXY = "http://gatekeeper.mitre.org:80"
 with open(".ghcreds") as f:
     USERNAME, APIKEY = [x.strip() for x in f.readlines()]
 
@@ -40,13 +39,11 @@ def get_links(r):
 
 
 def call_api(url):
-    proxies = {'http': PROXY, 'https': PROXY}
-
     authorization = 'token {}'.format(APIKEY)
     user_agent = USERNAME + " python-requests/" + requests.__version__
     headers = {'Authorization': authorization, 'User-Agent': user_agent}
 
-    return requests.get(url, proxies=proxies, headers=headers)
+    return requests.get(url, headers=headers)
 
 
 def get_issues(repo):
