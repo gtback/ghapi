@@ -1,4 +1,6 @@
-Use the GitHub API to get a list of all the open issues in a repository
+Use the GitHub API for a few common tasks:
+- get a list of all the open issues in a repository.
+- check for users who don't have 2FA enabled on an organzation (that you own).
 
 ## Quickstart
 

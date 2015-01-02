@@ -29,11 +29,12 @@ def write_issues_csv(issue_list, filename):
 def get_links(r):
     links = {}
 
-    for link in r.headers['link'].split(','):
-        url, rel = link.split(';')
-        url = url.strip().strip('<>')
-        rel = rel.split('"')[1]
-        links[rel] = url
+    if 'link' in r.headers:
+        for link in r.headers['link'].split(','):
+            url, rel = link.split(';')
+            url = url.strip().strip('<>')
+            rel = rel.split('"')[1]
+            links[rel] = url
 
     return links
 
@@ -43,19 +44,36 @@ def call_api(url):
     user_agent = USERNAME + " python-requests/" + requests.__version__
     headers = {'Authorization': authorization, 'User-Agent': user_agent}
 
-    return requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != requests.codes.ok:
+        raise ValueError("API Error: %s" % response.json()['message'])
+
+    return response
+
+
+def _unpaginate(url):
+    """Repeatedly call an API until there is no 'next' parameter.
+
+    The URL should should return JSON consisting of a list of items.
+    """
+
+    items = []
+
+    while url:
+        r = call_api(url)
+        url = get_links(r).get('next')
+
+        items.extend(r.json())
+
+    return items
 
 
 def get_issues(repo):
     issues = []
 
     url = "https://api.github.com/repos/%s/issues" % repo
-    while url:
-        # print url
-        r = call_api(url)
-        url = get_links(r).get('next')
-
-        issues.extend(r.json())
+    issues = _unpaginate(url)
 
     return issues
 
@@ -122,3 +140,11 @@ class Issue(object):
 
     def as_dict(self):
         pprint(self._)
+
+
+def tfa_users(org):
+    url = "https://api.github.com/orgs/%s/members?filter=2fa_disabled" % org
+
+    users = _unpaginate(url)
+    for user in users:
+        print user['login']
