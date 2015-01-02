@@ -9,7 +9,7 @@ $ cd ghapi
 $ cat .ghcreds
 gtback
 <GitHub Personal Access Token>
-$ python example.py
+$ python issues.py gtback/ghapi
 ```
 
 Create your Personal Access Token at
