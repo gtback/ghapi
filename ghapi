@@ -1,9 +1,12 @@
+#!/usr/bin/env python
+
 import csv
 from datetime import datetime
 import json
 import logging
 from StringIO import StringIO
 
+import click
 import requests
 
 
@@ -13,6 +16,11 @@ logger = logging.getLogger(__name__)
 
 with open(".ghcreds") as f:
     USERNAME, APIKEY = [x.strip() for x in f.readlines()]
+
+
+@click.group()
+def cli():
+    pass
 
 
 def get_issue_from_file(filename):
@@ -144,8 +152,20 @@ class Issue(object):
         pprint(self._)
 
 
-def tfa_users(org):
+@cli.command()
+@click.argument("org")
+def tfa(org):
     url = "https://api.github.com/orgs/%s/members?filter=2fa_disabled" % org
 
     for user in _unpaginate(url):
         print user['login']
+
+
+@cli.command()
+@click.argument('repo')
+def issues(repo):
+    print_issues(get_issues(repo), sort=True)
+
+
+if __name__ == "__main__":
+    cli()
