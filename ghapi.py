@@ -63,16 +63,12 @@ def _unpaginate(url):
 
     The URL should should return JSON consisting of a list of items.
     """
-
-    items = []
-
     while url:
         r = call_api(url)
         url = get_links(r).get('next')
 
-        items.extend(r.json())
-
-    return items
+        for item in r.json():
+            yield item
 
 
 def get_issues(repo):
@@ -151,6 +147,5 @@ class Issue(object):
 def tfa_users(org):
     url = "https://api.github.com/orgs/%s/members?filter=2fa_disabled" % org
 
-    users = _unpaginate(url)
-    for user in users:
+    for user in _unpaginate(url):
         print user['login']
