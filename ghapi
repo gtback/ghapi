@@ -167,5 +167,14 @@ def issues(repo):
     print_issues(get_issues(repo), sort=True)
 
 
+@cli.command()
+@click.argument('org')
+def repos(org):
+    url = "https://api.github.com/orgs/%s/repos" % org
+
+    for repo in sorted(_unpaginate(url), key=lambda x: x['updated_at']):
+        print repo['updated_at'], repo['name']
+
+
 if __name__ == "__main__":
     cli()
