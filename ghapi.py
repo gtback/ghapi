@@ -1,9 +1,15 @@
 import csv
 from datetime import datetime
 import json
+import logging
 from StringIO import StringIO
 
 import requests
+
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 
 with open(".ghcreds") as f:
     USERNAME, APIKEY = [x.strip() for x in f.readlines()]
