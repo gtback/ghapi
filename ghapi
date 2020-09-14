@@ -4,7 +4,7 @@ import csv
 from datetime import datetime
 import json
 import logging
-from StringIO import StringIO
+from io import StringIO
 
 import click
 import requests
@@ -95,14 +95,14 @@ def print_issues(issues, sort=False):
     for issue in issues:
         i = Issue(issue)
         fields =  [i.number, i.title, i.url, ",".join(i.labels)]
-        print "\t".join(str(x) for x in fields)
+        print("\t".join(str(x) for x in fields))
 
 
 def ratelimit_info(response):
-    print response.headers["X-RateLimit-Limit"]
-    print response.headers["X-RateLimit-Remaining"]
+    print(response.headers["X-RateLimit-Limit"])
+    print(response.headers["X-RateLimit-Remaining"])
     reset_date = float(response.headers["X-RateLimit-Reset"])
-    print datetime.fromtimestamp(reset_date).isoformat()
+    print(datetime.fromtimestamp(reset_date).isoformat())
 
 
 class Issue(object):
@@ -158,7 +158,7 @@ def tfa(org):
     url = "https://api.github.com/orgs/%s/members?filter=2fa_disabled" % org
 
     for user in _unpaginate(url):
-        print user['login']
+        print(user['login'])
 
 
 @cli.command()
@@ -173,7 +173,7 @@ def repos(org):
     url = "https://api.github.com/orgs/%s/repos" % org
 
     for repo in sorted(_unpaginate(url), key=lambda x: x['updated_at']):
-        print repo['updated_at'], repo['name']
+        print(repo['updated_at'], repo['name'])
 
 
 if __name__ == "__main__":
