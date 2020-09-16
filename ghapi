@@ -5,6 +5,7 @@ from datetime import datetime
 from io import StringIO
 import json
 import logging
+import sys
 
 import click
 import requests
@@ -61,7 +62,7 @@ def call_api(url):
     response = requests.get(url, headers=headers)
 
     if response.status_code != requests.codes.ok:
-        raise ValueError("API Error: %s" % response.json()['message'])
+        raise ValueError(f"API Error ({url}): {response.json()['message']}")
 
     return response
 
@@ -72,6 +73,8 @@ def _unpaginate(url):
     The URL should should return JSON consisting of a list of items.
     """
     while url:
+        # Rudimentary logging while an operation is in progress
+        print(url, file=sys.stderr)
         r = call_api(url)
         url = get_links(r).get('next')
 
@@ -88,13 +91,31 @@ def get_issues(repo):
     return issues
 
 
+def get_closed_issues(repo):
+    issues = []
+
+    url = "https://api.github.com/repos/%s/issues?state=closed" % repo
+    issues = _unpaginate(url)
+
+    return issues
+
+
+# The closed date is an ISO-formatted string in UTC, so we can just use string
+# comparison to find issues closed between 2019-05-01 and 2020-05-01.
+START_DATE = "2019-05-01"
+END_DATE = "2020-05-01"
+
 def print_issues(issues, sort=False):
     if sort:
         issues = sorted(issues, key=lambda x:int(x['number']))
 
+    # Header Row
+    print("\t".join(['URL', 'Title', "State", "Created At", "Closed At", "Labels"]))
     for issue in issues:
         i = Issue(issue)
-        fields =  [i.number, i.title, i.url, ",".join(i.labels)]
+        if i.closed_at <= START_DATE or i.closed_at >= END_DATE:
+            continue
+        fields =  [i.url, i.title, i.state, i.created_at, i.closed_at, ",".join(i.labels)]
         print("\t".join(str(x) for x in fields))
 
 
@@ -148,6 +169,18 @@ class Issue(object):
     def actions_str(self):
         return ", ".join(i.actions) if i.actions else ""
 
+    @property
+    def state(self):
+        return self._d['state']
+
+    @property
+    def created_at(self):
+        return self._d['created_at']
+
+    @property
+    def closed_at(self):
+        return self._d['closed_at']
+
     def as_dict(self):
         pprint(self._)
 
@@ -164,7 +197,7 @@ def tfa(org):
 @cli.command()
 @click.argument('repo')
 def issues(repo):
-    print_issues(get_issues(repo), sort=True)
+    print_issues(get_closed_issues(repo), sort=True)
 
 
 @cli.command()
