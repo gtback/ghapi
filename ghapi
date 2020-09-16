@@ -2,15 +2,15 @@
 
 import csv
 from datetime import datetime
+from io import StringIO
 import json
 import logging
-from io import StringIO
 
 import click
 import requests
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
