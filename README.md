@@ -1,10 +1,20 @@
+# ghapi
+
+A small GitHub API client in Python
+
+## About
+
 Use the GitHub API for a few common tasks:
-- get a list of all the open issues in a repository.
-- check for users who don't have 2FA enabled on an organzation (that you own).
 
-## Quickstart
+- Get a list of all repositories in an organization.
+- Get a list of all issues and PRs in a repository.
+- Check for users who don't have 2FA enabled on an organization (that you own).
 
-```
+## Quick Start
+
+Create a GitHub [personal access token](https://github.com/settings/tokens).
+
+```shell
 $ mkvirtualenv ghapi
 $ git clone https://github.com/gtback/ghapi.git
 $ cd ghapi
@@ -13,6 +23,3 @@ gtback
 <GitHub Personal Access Token>
 $ ./ghapi issues gtback/ghapi
 ```
-
-Create your Personal Access Token at
-https://github.com/settings/applications#personal-access-tokens
