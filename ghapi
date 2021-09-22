@@ -108,9 +108,9 @@ def get_closed_issues(repo):
 
 
 # The closed date is an ISO-formatted string in UTC, so we can just use string
-# comparison to find issues closed between 2019-05-01 and 2020-05-01.
-START_DATE = "2019-05-01"
-END_DATE = "2020-05-01"
+# comparison to find issues closed between START_DATE and END_DATE.
+START_DATE = None
+END_DATE = None
 
 def print_issues(issues, sort=False):
     if sort:
@@ -120,7 +120,7 @@ def print_issues(issues, sort=False):
     print("\t".join(['URL', 'Title', "State", "Created At", "Closed At", "Labels"]))
     for issue in issues:
         i = Issue(issue)
-        if i.closed_at <= START_DATE or i.closed_at >= END_DATE:
+        if (START_DATE and i.closed_at <= START_DATE) or (END_DATE and i.closed_at >= END_DATE):
             continue
         fields =  [i.url, i.title, i.state, i.created_at, i.closed_at, ",".join(i.labels)]
         print("\t".join(str(x) for x in fields))
