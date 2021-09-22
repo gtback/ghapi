@@ -204,7 +204,7 @@ def tfa(org):
 @cli.command()
 @click.argument('repo')
 def issues(repo):
-    print_issues(get_closed_issues(repo), sort=True)
+    print_issues(get_issues(repo), sort=True)
 
 
 @cli.command()
