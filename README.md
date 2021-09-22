@@ -23,3 +23,6 @@ gtback
 <GitHub Personal Access Token>
 $ ./ghapi issues gtback/ghapi
 ```
+
+You can also set `GITHUB_USER` and `GITHUB_TOKEN` environment variables, rather
+than using the `.ghcreds` file.

@@ -5,6 +5,7 @@ from datetime import datetime
 from io import StringIO
 import json
 import logging
+import os
 import sys
 
 import click
@@ -15,8 +16,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-with open(".ghcreds") as f:
-    USERNAME, APIKEY = [x.strip() for x in f.readlines()]
+try:
+    with open(".ghcreds") as f:
+        GITHUB_USER, GITHUB_TOKEN = [x.strip() for x in f.readlines()]
+except:
+    if "GITHUB_TOKEN" in os.environ:
+        GITHUB_TOKEN = os.environ['GITHUB_TOKEN']
+    if "GITHUB_USER" in os.environ:
+        GITHUB_USER = os.environ['GITHUB_USER']
 
 
 @click.group()
@@ -55,8 +62,8 @@ def get_links(r):
 
 
 def call_api(url):
-    authorization = 'token {}'.format(APIKEY)
-    user_agent = USERNAME + " python-requests/" + requests.__version__
+    authorization = 'token {}'.format(GITHUB_TOKEN)
+    user_agent = GITHUB_USER + " python-requests/" + requests.__version__
     headers = {'Authorization': authorization, 'User-Agent': user_agent}
 
     response = requests.get(url, headers=headers)
