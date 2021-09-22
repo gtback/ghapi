@@ -81,7 +81,7 @@ def _unpaginate(url):
     """
     while url:
         # Rudimentary logging while an operation is in progress
-        print(url, file=sys.stderr)
+        # print(url, file=sys.stderr)
         r = call_api(url)
         url = get_links(r).get('next')
 
