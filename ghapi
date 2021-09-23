@@ -213,12 +213,22 @@ def issues(repo):
 @click.option('--forks-only', is_flag=True)
 @click.option('--archived/--no-archived', default=False)
 @click.option('--archived-only', is_flag=True)
-def repos(org, forks, forks_only, archived, archived_only):
+@click.option('--sort', type=click.Choice(['name', 'updated'], case_sensitive=False), default='updated')
+@click.option('--reverse', is_flag=True)
+def repos(org, forks, forks_only, archived, archived_only, sort, reverse):
     url = "https://api.github.com/orgs/%s/repos" % org
 
     # By default, this doesn't list forks, and doesn't list archived repos. You can pass `--forks` to include both forks as well, or `--forks-only` to just include forks
 
-    for repo in sorted(_unpaginate(url), key=lambda x: x['updated_at']):
+    if sort == 'updated':
+        sort = 'updated_at'
+
+    repos =_unpaginate(url)
+    repos = sorted(repos, key=lambda x: x[sort])
+    if reverse:
+        repos = reversed(repos)
+
+    for repo in repos:
         # print(repo['name'], forks, forks_only, archived, archived_only, repo.get('fork'), repo.get('archived'))
         if repo.get('fork'):
             if not forks_only and not forks:
