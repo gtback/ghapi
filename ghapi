@@ -216,5 +216,12 @@ def repos(org):
         print(repo['updated_at'], repo['name'])
 
 
+@cli.command()
+def ratelimit():
+    url = "https://api.github.com/rate_limit"
+
+    ratelimit_info(call_api(url))
+
+
 if __name__ == "__main__":
     cli()
